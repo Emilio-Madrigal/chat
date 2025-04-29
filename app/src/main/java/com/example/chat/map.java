@@ -1,6 +1,7 @@
 package com.example.chat;
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.LocationRequest;
 import android.os.Bundle;
 
 import androidx.core.app.ActivityCompat;
@@ -10,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.google.android.gms.location.LocationCallback;
 
 public class map extends Fragment {
     private GoogleMap mMap;
