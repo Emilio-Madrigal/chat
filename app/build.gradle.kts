@@ -65,7 +65,7 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.google.firebase.firestore)
     implementation(libs.ccp)
-
+    implementation (libs.play.services.maps)
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.firebase:firebase-analytics-ktx")
 }
