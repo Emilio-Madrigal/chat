@@ -1,10 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
-    //las de firebase
+    alias(libs.plugins.secrets)
     id("com.google.gms.google-services")
-
-
-
 }
 
 android {
@@ -34,11 +31,26 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
+        // ...
+    }
 }
 
 dependencies {
-
-
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.activity)
+    implementation(libs.constraintlayout)
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.database) // Para Firebase Realtime Database
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -47,16 +59,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
-    //las de firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
-    implementation("com.google.firebase:firebase-auth")
-
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-firestore")
-
-
-    //picker de codigo de telefono por pais
-    implementation("com.hbb20:ccp:2.5.0")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(platform(libs.firebase.bom.v33130))
+    implementation(libs.firebase.analytics)
+    implementation(libs.google.firebase.firestore)
+    implementation(libs.ccp)
 }

@@ -15,8 +15,7 @@
         android:layout_height="match_parent">
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
-            android:layout_height="2dp"
-            layout_above>
+            android:layout_height="2dp">
 
         </com.google.android.material.divider.MaterialDivider>
     <com.google.android.material.bottomnavigation.BottomNavigationView
