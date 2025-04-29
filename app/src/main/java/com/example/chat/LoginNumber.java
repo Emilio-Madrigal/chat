@@ -21,7 +21,6 @@ public class LoginNumber extends AppCompatActivity {
     ProgressBar Numberbar;
     CountryCodePicker Countrycode;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);

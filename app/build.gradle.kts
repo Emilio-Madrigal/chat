@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1"
     id("com.google.gms.google-services")
 }
 
@@ -42,15 +42,15 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.play.services.location)
+    implementation(libs.play.services.location)
     implementation(libs.play.services.maps)
-    implementation(libs.play.services.location)
-    implementation(libs.play.services.location)
+    implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
-    implementation(libs.firebase.database) // Para Firebase Realtime Database
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -65,4 +65,7 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.google.firebase.firestore)
     implementation(libs.ccp)
+
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.firebase:firebase-analytics-ktx")
 }
