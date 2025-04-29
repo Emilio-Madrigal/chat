@@ -1,6 +1,7 @@
 package com.example.chat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -46,6 +47,15 @@ public class One_Time_Password extends AppCompatActivity {
         OTP=findViewById (R.id.OTP);
         SiguienteOTP=findViewById (R.id.siguienteOTP);
         OTPbar=findViewById (R.id.progressBarOTP);
+
+        SiguienteOTP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(One_Time_Password.this, Username.class);
+                startActivity(intent);
+
+            }
+        });
 
         TELEFONO=getIntent ().getExtras ().getString ("telefono");
 
