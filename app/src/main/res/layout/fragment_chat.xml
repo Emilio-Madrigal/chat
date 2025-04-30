@@ -15,8 +15,6 @@
         android:background="@color/backgroundSecondary"
         android:gravity="center"
         android:paddingTop="20dp">
-
-
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -44,11 +42,11 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:text="Este es un mensaje"
-            android:textSize="40sp"></TextView>
+
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="500dp"></ListView>
 
     </LinearLayout>
 

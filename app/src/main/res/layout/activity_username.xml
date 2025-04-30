@@ -112,7 +112,6 @@
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:hint="Ingresa tu nombre"
-                android:inputType="phone"
                 android:background="@color/white"
                 android:backgroundTint="@color/white"
                 >
