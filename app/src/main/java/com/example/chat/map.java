@@ -39,6 +39,8 @@ public class map extends Fragment implements OnMapReadyCallback {
 
     public map() {}
 
+    String key;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -54,6 +56,11 @@ public class map extends Fragment implements OnMapReadyCallback {
 
         createLocationRequest();
         createLocationCallback();
+
+            // Recibir los datos del bundle
+            if (getArguments() != null) {
+                key = getArguments().getString("key");
+            }
 
         return view;
     }
@@ -78,7 +85,7 @@ public class map extends Fragment implements OnMapReadyCallback {
 
                     LatLng userLocation = new LatLng(currentLat, currentLng);
                     if (mMap != null) {
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+
                     }
                 }
             }
@@ -119,13 +126,11 @@ public class map extends Fragment implements OnMapReadyCallback {
     private void uploadLocationToFirebase(double lat, double lng) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("users");
-
-        String userId = "brad";
+        
+        String userId = key;
 
         UserLocation location = new UserLocation(lat, lng);
-        myRef.child(userId).setValue(location)
-                .addOnSuccessListener(aVoid -> Toast.makeText(requireContext(), "Ubicación actualizada!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(requireContext(), "Error al subir ubicación", Toast.LENGTH_SHORT).show());
+        myRef.child(userId).setValue(location);
     }
     public static class UserLocation {
         private double lat;

@@ -6,24 +6,32 @@ import android.os.Handler;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class Splash extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate (savedInstanceState);
-        EdgeToEdge.enable (this);
-        setContentView (R.layout.activity_splash);
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_splash);
 
-        new Handler ().postDelayed (new Runnable () {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-            startActivity (new Intent (Splash.this,LoginNumber.class));
-            finish ();
+                if (currentUser != null) {
+                    Intent intent = new Intent(Splash.this, StartActivity.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(Splash.this, LoginNumber.class);
+                    startActivity(intent);
+                }
+                finish();
             }
-        },1500);
+        }, 1500);
     }
 }

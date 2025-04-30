@@ -13,6 +13,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -26,40 +28,63 @@ public class Username extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_username);
+        super.onCreate (savedInstanceState);
+        EdgeToEdge.enable (this);
+        setContentView (R.layout.activity_username);
 
-        username = findViewById(R.id.user);
-        finalizar = findViewById(R.id.finalizar);
-        userbar = findViewById(R.id.progressBarUser);
+        username = findViewById (R.id.user);
+        finalizar = findViewById (R.id.finalizar);
+        userbar = findViewById (R.id.progressBarUser);
 
-        db = FirebaseFirestore.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance ();
+        FirebaseUser currentUser = mAuth.getCurrentUser ();
+        db = FirebaseFirestore.getInstance ();
 
+finalizar.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        progreso(false);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        finalizar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String nombreUsuario = username.getText().toString().trim();
-                if (!nombreUsuario.isEmpty()) {
-                    userbar.setVisibility(View.VISIBLE);
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+            String nombreUsuario = username.getText().toString().trim();
 
-                    Map<String, Object> user = new HashMap<>();
-                    user.put("nombre", nombreUsuario);
+            if (!nombreUsuario.isEmpty()) {
+                progreso(true);
 
-                    db.collection("usuarios")
-                            .add(user)
-                            .addOnSuccessListener(documentReference -> {
-                                userbar.setVisibility(View.GONE);
-                                Intent intent = new Intent(Username.this, StartActivity.class);
-                                startActivity(intent);
-                                finish();
-                            })
-                            .addOnFailureListener(e -> {
-                                userbar.setVisibility(View.GONE);
-                            });
-                }
+                Map<String, Object> user = new HashMap<>();
+                user.put("nombre", nombreUsuario);
+
+                db.collection("usuarios")
+                        .document(uid) // 🔥 Aquí el documento se llama como el UID
+                        .set(user)
+                        .addOnSuccessListener(aVoid -> {
+                            progreso(false);
+                            Intent intent = new Intent(Username.this, StartActivity.class);
+                            startActivity(intent);
+                            finish();
+                        })
+                        .addOnFailureListener(e -> {
+                            progreso(false);
+                        });
             }
-        });
+        } else {
+            progreso(false);
+        }
+    }
+});
+
+
+    }
+
+    void progreso(boolean enproceso) {
+        if (enproceso) {
+            userbar.setVisibility (View.VISIBLE);
+            finalizar.setVisibility (View.GONE);
+        } else {
+            userbar.setVisibility (View.GONE);
+            finalizar.setVisibility (View.VISIBLE);
+        }
     }
 }

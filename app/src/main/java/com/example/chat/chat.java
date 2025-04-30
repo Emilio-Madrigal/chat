@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class chat extends Fragment {
 
     private ListView listView;
-    private ArrayAdapter<String> adapter;
+    private ArrayAdapter adapter;
     private ArrayList<String> userList;
     private FirebaseFirestore db;
 
@@ -29,46 +29,44 @@ public class chat extends Fragment {
     }
 
     public static chat newInstance(String param1, String param2) {
-        chat fragment = new chat();
+        chat fragment = new chat ();
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate (savedInstanceState);
 
-        //listView = findViewById(R.id.usuarios); // Asegúrate de que el ID coincida
-        userList = new ArrayList<>();
-        //adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, userList);
-        listView.setAdapter(adapter);
-
-        db = FirebaseFirestore.getInstance();
-
-        cargarUsuarios();
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_chat, container, false);
+        View view = inflater.inflate (R.layout.fragment_chat, container, false);
+        listView = listView.findViewById (R.id.usuarios);
+        userList = new ArrayList<> ();
+        adapter = new ArrayAdapter<> (requireContext (), android.R.layout.simple_list_item_1, userList);
+        listView.setAdapter (adapter);
+        db = FirebaseFirestore.getInstance ();
+        cargarUsuarios ();
+        return view;
     }
-
     private void cargarUsuarios() {
-        CollectionReference usuariosRef = db.collection("usuarios");
+        CollectionReference usuariosRef = db.collection ("usuarios");
 
-        usuariosRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                QuerySnapshot documentos = task.getResult();
-                userList.clear(); // Por si recargas datos
+        usuariosRef.get ().addOnCompleteListener (task -> {
+            if (task.isSuccessful ()) {
+                QuerySnapshot documentos = task.getResult ();
+                userList.clear (); // Por si recargas datos
 
-                for (DocumentSnapshot doc : documentos.getDocuments()) {
-                    String nombre = doc.getString("nombre"); // Cambia "nombre" si tu campo tiene otro nombre
+                for (DocumentSnapshot doc : documentos.getDocuments ()) {
+                    String nombre = doc.getString ("nombre"); // Cambia "nombre" si tu campo tiene otro nombre
                     if (nombre != null) {
-                        userList.add(nombre);
+                        userList.add (nombre);
                     }
                 }
 
-                adapter.notifyDataSetChanged(); // Actualiza la lista en pantalla
+                adapter.notifyDataSetChanged (); // Actualiza la lista en pantalla
             } else {
                 // Manejar error
             }
