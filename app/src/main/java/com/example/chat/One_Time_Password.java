@@ -66,6 +66,7 @@ public class One_Time_Password extends AppCompatActivity {
     }
 
     void enviarOTP(String telefono, boolean enviado){
+        startResendTimer();
         progreso (true);
         PhoneAuthOptions.Builder builder =
                 PhoneAuthOptions
@@ -130,5 +131,9 @@ public class One_Time_Password extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    void startResendTimer(){
+
     }
 }

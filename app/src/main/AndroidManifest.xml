@@ -27,7 +27,7 @@
             android:name=".LoginNumber"
             android:exported="false" />
         <activity
-            android:name=".StartActivity"
+            android:name=".Splash"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,8 +35,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Splash"
-            android:exported="true">
+            android:name=".StartActivity"
+            android:exported="false">
         </activity>
     </application>
 
