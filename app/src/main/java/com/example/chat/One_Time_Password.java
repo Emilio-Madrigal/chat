@@ -16,7 +16,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
@@ -48,20 +51,18 @@ public class One_Time_Password extends AppCompatActivity {
         SiguienteOTP=findViewById (R.id.siguienteOTP);
         OTPbar=findViewById (R.id.progressBarOTP);
 
-        SiguienteOTP.setOnClickListener(new View.OnClickListener() {
+        TELEFONO=getIntent ().getExtras ().getString ("telefono");
+        enviarOTP (TELEFONO,false);
+
+        SiguienteOTP.setOnClickListener (new View.OnClickListener () {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(One_Time_Password.this, Username.class);
-                startActivity(intent);
-
+                String codigoOTP=OTP.getText ().toString ();
+                PhoneAuthCredential credential = PhoneAuthProvider.getCredential (codigoVerificacion,codigoOTP);
+                 singIn (credential);
+                 progreso (true);
             }
         });
-
-        TELEFONO=getIntent ().getExtras ().getString ("telefono");
-
-        Map<String,String> data = new HashMap<> ();
-        FirebaseFirestore.getInstance ().collection ("test").add (data);
-        enviarOTP (TELEFONO,false);
     }
 
     void enviarOTP(String telefono, boolean enviado){
@@ -115,6 +116,19 @@ public class One_Time_Password extends AppCompatActivity {
     }
 
     void singIn(PhoneAuthCredential phoneAuthCredential){
-
+        progreso (true);
+        auth.signInWithCredential (phoneAuthCredential).addOnCompleteListener (new OnCompleteListener<AuthResult> () {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                progreso (false);
+                if(task.isSuccessful ()){
+                    Intent intent = new Intent (One_Time_Password.this,Username.class);
+                    intent.putExtra ("telefono",TELEFONO);
+                    startActivity (intent);
+                }else{
+                    Toast.makeText(One_Time_Password.this, "error en la verificacion", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }
