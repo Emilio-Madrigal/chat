@@ -1,75 +1,47 @@
 package com.example.chat;
 
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.example.chat.apatador.ChatRoomAdapterFirestore;
+import com.example.chat.model.ChatRoomModel;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
+import com.google.firebase.firestore.Query;
 
 public class chat extends Fragment {
 
-    private ListView listView;
-    private ArrayAdapter adapter;
-    private ArrayList<String> userList;
+    private RecyclerView recyclerView;
+    private ChatRoomAdapterFirestore adapter;
     private FirebaseFirestore db;
 
-    public chat() {
-
-    }
-
-    public static chat newInstance(String param1, String param2) {
-        chat fragment = new chat ();
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate (savedInstanceState);
-
-
-    }
+    public chat() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate (R.layout.fragment_chat, container, false);
-        listView = listView.findViewById (R.id.usuarios);
-        userList = new ArrayList<> ();
-        adapter = new ArrayAdapter<> (requireContext (), android.R.layout.simple_list_item_1, userList);
-        listView.setAdapter (adapter);
-        db = FirebaseFirestore.getInstance ();
-        cargarUsuarios ();
+        View view = inflater.inflate(R.layout.fragment_chat, container, false);
+
+        recyclerView = view.findViewById(R.id.recyclerChatRooms);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        db = FirebaseFirestore.getInstance();
+        Query query = db.collection("chatrooms").orderBy("timestamp", Query.Direction.DESCENDING);
+
+        FirestoreRecyclerOptions<ChatRoomModel> options =
+                new FirestoreRecyclerOptions.Builder<ChatRoomModel>()
+                        .setQuery(query, ChatRoomModel.class)
+                        .setLifecycleOwner(this)
+                        .build();
+
+        adapter = new ChatRoomAdapterFirestore(options, getContext());
+        recyclerView.setAdapter(adapter);
+
         return view;
-    }
-    private void cargarUsuarios() {
-        CollectionReference usuariosRef = db.collection ("usuarios");
-
-        usuariosRef.get ().addOnCompleteListener (task -> {
-            if (task.isSuccessful ()) {
-                QuerySnapshot documentos = task.getResult ();
-                userList.clear (); // Por si recargas datos
-
-                for (DocumentSnapshot doc : documentos.getDocuments ()) {
-                    String nombre = doc.getString ("nombre"); // Cambia "nombre" si tu campo tiene otro nombre
-                    if (nombre != null) {
-                        userList.add (nombre);
-                    }
-                }
-
-                adapter.notifyDataSetChanged (); // Actualiza la lista en pantalla
-            } else {
-                // Manejar error
-            }
-        });
     }
 }

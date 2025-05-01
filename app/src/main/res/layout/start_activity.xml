@@ -16,6 +16,7 @@
 
     <!-- Menú de navegación inferior -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
+
         android:id="@+id/nav_menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

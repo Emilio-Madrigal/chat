@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/chatRoomList"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white"
     android:padding="16dp"
-    tools:context=".ChatRoomListActivity">
+    android:background="@color/white"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".chat">
 
     <TextView
         android:layout_width="match_parent"
@@ -16,16 +15,14 @@
         android:text="Salas de Chat"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:textAlignment="center"
         android:textColor="@color/black"
-        android:paddingBottom="12dp"
-        android:textAlignment="center" />
+        android:paddingBottom="12dp" />
 
-    <ListView
-        android:id="@+id/listaSalas"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerChatRooms"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@color/darker_gray"
-        android:dividerHeight="0.5dp"
         android:clipToPadding="false"
         android:paddingBottom="8dp" />
 </LinearLayout>
