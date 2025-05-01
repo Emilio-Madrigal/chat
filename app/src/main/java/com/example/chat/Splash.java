@@ -3,7 +3,7 @@ package com.example.chat;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-
+import com.example.chat.utils.utilsFirebase;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,7 +23,7 @@ public class Splash extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (currentUser != null) {
+                if (utilsFirebase.islogged ()) {
                     Intent intent = new Intent(Splash.this, StartActivity.class);
                     startActivity(intent);
                 } else {

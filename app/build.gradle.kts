@@ -38,6 +38,17 @@ android {
 }
 
 dependencies {
+    // FirebaseUI for Firebase Realtime Database
+    implementation ("com.firebaseui:firebase-ui-database:9.0.0")
+
+    // FirebaseUI for Cloud Firestore
+    implementation ("com.firebaseui:firebase-ui-firestore:9.0.0")
+
+    // FirebaseUI for Firebase Auth
+    implementation ("com.firebaseui:firebase-ui-auth:9.0.0")
+
+    // FirebaseUI for Cloud Storage
+    implementation ("com.firebaseui:firebase-ui-storage:9.0.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

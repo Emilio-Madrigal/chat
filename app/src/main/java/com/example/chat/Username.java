@@ -8,13 +8,20 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.chat.model.userModel;
+import com.example.chat.utils.utilsFirebase;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -25,6 +32,8 @@ public class Username extends AppCompatActivity {
     Button finalizar;
     ProgressBar userbar;
     FirebaseFirestore db; // Firestore instance
+    String telefono;
+    userModel userModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,46 +45,62 @@ public class Username extends AppCompatActivity {
         finalizar = findViewById (R.id.finalizar);
         userbar = findViewById (R.id.progressBarUser);
 
+        telefono=getIntent ().getExtras ().getString ("telefono");
+        getusuario();
+
         FirebaseAuth mAuth = FirebaseAuth.getInstance ();
         FirebaseUser currentUser = mAuth.getCurrentUser ();
         db = FirebaseFirestore.getInstance ();
 
-finalizar.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        progreso(false);
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        finalizar.setOnClickListener((v -> {
 
-        if (currentUser != null) {
-            String uid = currentUser.getUid();
-            String nombreUsuario = username.getText().toString().trim();
+            setusername ();
 
-            if (!nombreUsuario.isEmpty()) {
-                progreso(true);
+        }));
 
-                Map<String, Object> user = new HashMap<>();
-                user.put("nombre", nombreUsuario);
-
-                db.collection("usuarios")
-                        .document(uid) // 🔥 Aquí el documento se llama como el UID
-                        .set(user)
-                        .addOnSuccessListener(aVoid -> {
-                            progreso(false);
-                            Intent intent = new Intent(Username.this, StartActivity.class);
-                            startActivity(intent);
-                            finish();
-                        })
-                        .addOnFailureListener(e -> {
-                            progreso(false);
-                        });
-            }
-        } else {
-            progreso(false);
-        }
     }
-});
 
+    void setusername(){
+        String user=username.getText ().toString ();
+        if (user.isEmpty () || user.length ()<3){
+            username.setError ("debe de tener mas de 3 caracteres");
+            return;
+        }
+        progreso (true);
+        if (userModel!=null){
+            userModel.setUsername (user);
+        }else {
+            userModel = new userModel(telefono, Timestamp.now (),user);
+        }
+        utilsFirebase.currentUserDetails ().set (userModel).addOnCompleteListener (new OnCompleteListener<Void> () {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful ()){
+                    Intent intent = new Intent (Username.this,StartActivity.class);
+                    intent.setFlags (Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity (intent);
+                }
+            }
+        });
+    }
 
+    void getusuario(){
+        progreso (true);
+        utilsFirebase.currentUserDetails ().get ().addOnCompleteListener (new OnCompleteListener<DocumentSnapshot> () {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                progreso (false);
+                if (task.isSuccessful ()){
+                   task.getResult ().toObject (userModel.class);
+                   if (userModel!=null){
+                       username.setText (userModel.getUsername ());
+                   }
+
+                }else{
+
+                }
+            }
+        });
     }
 
     void progreso(boolean enproceso) {
