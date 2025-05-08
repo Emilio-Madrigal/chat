@@ -44,9 +44,10 @@ public class map extends Fragment implements OnMapReadyCallback {
 
     private double currentLat = 0.0;
     private double currentLng = 0.0;
-    String nombre;
+    String nombre1;
+    String nombre2;
+    Double lng2,lat2,lat1,lng1;
 
-    private double lat, lng;
 
     public map() {
     }
@@ -135,14 +136,8 @@ public class map extends Fragment implements OnMapReadyCallback {
                     Double lat = snapshot.child("lat").getValue(Double.class);
                     Double lng = snapshot.child("lng").getValue(Double.class);
 
-                    if (lat != null && lng != null) {
-                        Toast.makeText(getContext(), lat +" "+ lng, Toast.LENGTH_LONG).show();
-                        // Aquí puedes usar los datos como necesites
-                    } else {
-                        Log.w("FirebaseData", "Lat o Lng es null");
-                    }
-                } else {
-                    Log.w("FirebaseData", "Usuario no encontrado");
+                        lat1=lat;
+                        lng1=lng;
                 }
             }
 
@@ -171,7 +166,7 @@ public class map extends Fragment implements OnMapReadyCallback {
 
         String userLocacion = getUserLocation("brandon");
 
-        mMap.addMarker(new MarkerOptions().position(new LatLng(20.681443, -103.434874)).title("Emilio"));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(lat1, lng1)).title("emilio"));
         mMap.addMarker(new MarkerOptions().position(new LatLng(40.7128, -74.0060)).title("Charlie"));
     }
 
