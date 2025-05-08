@@ -160,7 +160,7 @@ public class map extends Fragment implements OnMapReadyCallback {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
-
+//
         mMap.setMyLocationEnabled(true);
         startLocationUpdates();
 
