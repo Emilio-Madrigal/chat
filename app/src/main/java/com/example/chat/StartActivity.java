@@ -42,12 +42,12 @@ public class StartActivity extends AppCompatActivity {
         if (currentUser != null) {
             String uid = currentUser.getUid ();
 
-            db.collection ("usuarios")
+            db.collection ("users")
                     .document (uid)
                     .get ()
                     .addOnSuccessListener (documentSnapshot -> {
                         if (documentSnapshot.exists ()) {
-                            nombre = documentSnapshot.getString ("nombre");
+                            nombre = documentSnapshot.getString ("username");
                             if (nombre != null) {
                                 Toast.makeText (StartActivity.this, "Bienvenido: " + nombre, Toast.LENGTH_LONG).show ();
                             } else {

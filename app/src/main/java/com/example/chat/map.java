@@ -1,5 +1,7 @@
 package com.example.chat;
 
+import static android.app.ProgressDialog.show;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +22,19 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class map extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
@@ -36,10 +44,34 @@ public class map extends Fragment implements OnMapReadyCallback {
 
     private double currentLat = 0.0;
     private double currentLng = 0.0;
+    String nombre;
 
-    public map() {}
+    private double lat, lng;
+
+    public map() {
+    }
 
     String key;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser currentUser = mAuth.getCurrentUser();
+//
+//        if(currentUser !=null){
+//        String uid = currentUser.getUid();
+//
+//        db.collection("users")
+//                .document(uid)
+//                .get()
+//                .addOnSuccessListener(documentSnapshot -> {
+//                    if (documentSnapshot.exists()) {
+//                        nombre = documentSnapshot.getString("username");
+//                    }
+//                })
+//                .addOnFailureListener(e -> {
+//                    Toast.makeText(getContext(), "Error al obtener datos", Toast.LENGTH_LONG).show();
+//                });
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,10 +89,10 @@ public class map extends Fragment implements OnMapReadyCallback {
         createLocationRequest();
         createLocationCallback();
 
-            // Recibir los datos del bundle
-            if (getArguments() != null) {
-                key = getArguments().getString("key");
-            }
+        // Recibir los datos del bundle
+        if (getArguments() != null) {
+            key = getArguments().getString("key");
+        }
 
         return view;
     }
@@ -92,6 +124,36 @@ public class map extends Fragment implements OnMapReadyCallback {
         };
     }
 
+
+    public String getUserLocation(String username) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(username);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Double lat = snapshot.child("lat").getValue(Double.class);
+                    Double lng = snapshot.child("lng").getValue(Double.class);
+
+                    if (lat != null && lng != null) {
+                        Toast.makeText(getContext(), lat +" "+ lng, Toast.LENGTH_LONG).show();
+                        // Aquí puedes usar los datos como necesites
+                    } else {
+                        Log.w("FirebaseData", "Lat o Lng es null");
+                    }
+                } else {
+                    Log.w("FirebaseData", "Usuario no encontrado");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("FirebaseData", "Error al leer datos: " + error.getMessage());
+            }
+        });
+        return username;
+    }
+
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -106,6 +168,8 @@ public class map extends Fragment implements OnMapReadyCallback {
 
         mMap.setMyLocationEnabled(true);
         startLocationUpdates();
+
+        String userLocacion = getUserLocation("brandon");
 
         mMap.addMarker(new MarkerOptions().position(new LatLng(20.681443, -103.434874)).title("Emilio"));
         mMap.addMarker(new MarkerOptions().position(new LatLng(40.7128, -74.0060)).title("Charlie"));
@@ -126,24 +190,39 @@ public class map extends Fragment implements OnMapReadyCallback {
     private void uploadLocationToFirebase(double lat, double lng) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("users");
-        
+
         String userId = key;
 
         UserLocation location = new UserLocation(lat, lng);
         myRef.child(userId).setValue(location);
     }
+
     public static class UserLocation {
         private double lat;
         private double lng;
 
-        public UserLocation() {}
+        public UserLocation() {
+        }
+
         public UserLocation(double lat, double lng) {
             this.lat = lat;
             this.lng = lng;
         }
-        public double getLat() { return lat; }
-        public void setLat(double lat) { this.lat = lat; }
-        public double getLng() { return lng; }
-        public void setLng(double lng) { this.lng = lng; }
+
+        public double getLat() {
+            return lat;
+        }
+
+        public void setLat(double lat) {
+            this.lat = lat;
+        }
+
+        public double getLng() {
+            return lng;
+        }
+
+        public void setLng(double lng) {
+            this.lng = lng;
+        }
     }
 }

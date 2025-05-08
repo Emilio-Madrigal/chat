@@ -10,15 +10,8 @@ public class utilsFirebase {
         return FirebaseAuth.getInstance ().getUid ();
     }
 
-    public static boolean islogged(){
-
-        if (currentUserDetails ()!=null){
-
-            return true;
-        }
-
-        return false;
-
+    public static boolean islogged() {
+        return FirebaseAuth.getInstance().getCurrentUser() != null;
     }
 
     public  static DocumentReference currentUserDetails(){
