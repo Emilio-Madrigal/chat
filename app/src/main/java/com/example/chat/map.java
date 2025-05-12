@@ -145,7 +145,7 @@ public class map extends Fragment implements OnMapReadyCallback {
 
         // Carga usuarios y añade marcadores
         getUserLocationAndAddMarker("brandon");
-        getUserLocationAndAddMarker("Emilio2");
+        getUserLocationAndAddMarker("emilio");
     }
 
     private void startLocationUpdates() {

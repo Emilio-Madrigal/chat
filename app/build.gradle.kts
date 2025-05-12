@@ -49,6 +49,9 @@ dependencies {
 
     // FirebaseUI for Cloud Storage
     implementation ("com.firebaseui:firebase-ui-storage:9.0.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -77,6 +80,4 @@ dependencies {
     implementation(libs.google.firebase.firestore)
     implementation(libs.ccp)
     implementation (libs.play.services.maps)
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.firebase:firebase-analytics-ktx")
 }
