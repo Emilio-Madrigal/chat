@@ -1,5 +1,4 @@
 package com.example.chat;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -8,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -30,7 +28,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class map extends Fragment implements OnMapReadyCallback {
-
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest locationRequest;
@@ -38,10 +35,7 @@ public class map extends Fragment implements OnMapReadyCallback {
     private double currentLat = 0.0;
     private double currentLng = 0.0;
     private String key;
-
-    public map() {
-        // Constructor vacío requerido
-    }
+    public map() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -1,17 +1,10 @@
 package com.example.chat;
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,7 +12,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class StartActivity extends AppCompatActivity {
-
     BottomNavigationView bottomNavigationView;
     chat chat;
     map map;
@@ -30,19 +22,14 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.start_activity);
-
         chat = new chat();
         map = new map();
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
         if (currentUser != null) {
             String uid = currentUser.getUid();
-
             global.getInstance().setUid(uid);
-
             db.collection("users")
                     .document(uid)
                     .get()
@@ -64,19 +51,14 @@ public class StartActivity extends AppCompatActivity {
                         Toast.makeText(StartActivity.this, "Error al obtener datos", Toast.LENGTH_LONG).show();
                     });
         }
-
         bottomNavigationView = findViewById(R.id.nav_menu);
-
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if (item.getItemId() == R.id.map) {
-
                     Bundle bundle = new Bundle();
                     bundle.putString("key", nombre);
-
                     map.setArguments(bundle);
-
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.mainFrame, map)

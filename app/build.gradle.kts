@@ -38,46 +38,25 @@ android {
 }
 
 dependencies {
-    // FirebaseUI for Firebase Realtime Database
-    implementation ("com.firebaseui:firebase-ui-database:9.0.0")
-
-    // FirebaseUI for Cloud Firestore
-    implementation ("com.firebaseui:firebase-ui-firestore:9.0.0")
-
-    // FirebaseUI for Firebase Auth
-    implementation ("com.firebaseui:firebase-ui-auth:9.0.0")
-
-    // FirebaseUI for Cloud Storage
-    implementation ("com.firebaseui:firebase-ui-storage:9.0.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.firebase:firebase-analytics-ktx")
-
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.activity)
-    implementation(libs.constraintlayout)
-    implementation(libs.play.services.location)
-    implementation(libs.play.services.location)
-    implementation(libs.play.services.maps)
-    implementation(libs.firebase.database)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.activity)
-    implementation(libs.constraintlayout)
-    implementation(libs.firebase.firestore)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
     implementation(platform(libs.firebase.bom.v33130))
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.firestore)
     implementation(libs.google.firebase.firestore)
+    implementation(libs.firebase.ui.auth)
+    implementation(libs.firebase.ui.database)
+    implementation(libs.firebase.ui.firestore)
+    implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
+    implementation(libs.appcompat)
+    implementation(libs.appcompat.v161)
+    implementation(libs.material)
+    implementation(libs.activity)
+    implementation(libs.constraintlayout)
     implementation(libs.ccp)
-    implementation (libs.play.services.maps)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
 }

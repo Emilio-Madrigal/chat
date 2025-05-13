@@ -1,115 +1,79 @@
 package com.example.chat;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import com.example.chat.model.userModel;
 import com.example.chat.utils.utilsFirebase;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 public class Username extends AppCompatActivity {
     EditText username;
     Button finalizar;
     ProgressBar userbar;
-    FirebaseFirestore db; // Firestore instance
+    FirebaseFirestore db;
     String telefono;
     userModel userModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate (savedInstanceState);
-        EdgeToEdge.enable (this);
-        setContentView (R.layout.activity_username);
-
-        username = findViewById (R.id.user);
-        finalizar = findViewById (R.id.finalizar);
-        userbar = findViewById (R.id.progressBarUser);
-
-        telefono=getIntent ().getExtras ().getString ("telefono");
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_username);
+        username = findViewById(R.id.user);
+        finalizar = findViewById(R.id.finalizar);
+        userbar = findViewById(R.id.progressBarUser);
+        telefono = Objects.requireNonNull(getIntent().getExtras()).getString("telefono");
         getusuario();
-
-        FirebaseAuth mAuth = FirebaseAuth.getInstance ();
-        FirebaseUser currentUser = mAuth.getCurrentUser ();
-        db = FirebaseFirestore.getInstance ();
-
-        finalizar.setOnClickListener((v -> {
-
-            setusername ();
-
-        }));
-
+        db = FirebaseFirestore.getInstance();
+        finalizar.setOnClickListener((v -> setusername()));
     }
-
-    void setusername(){
-        String user=username.getText ().toString ();
-        if (user.isEmpty () || user.length ()<3){
-            username.setError ("debe de tener mas de 3 caracteres");
+    void setusername() {
+        String user = username.getText().toString();
+        if (user.isEmpty() || user.length() < 3) {
+            username.setError("debe de tener mas de 3 caracteres");
             return;
         }
-        progreso (true);
-        if (userModel!=null){
-            userModel.setUsername (user);
-        }else {
-            userModel = new userModel(telefono, Timestamp.now (),user);
+        progreso(true);
+        if (userModel != null) {
+            userModel.setUsername(user);
+        } else {
+            userModel = new userModel(telefono, Timestamp.now(), user);
         }
-        utilsFirebase.currentUserDetails ().set (userModel).addOnCompleteListener (new OnCompleteListener<Void> () {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful ()){
-                    Intent intent = new Intent (Username.this,StartActivity.class);
-                    intent.setFlags (Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity (intent);
+        utilsFirebase.currentUserDetails().set(userModel).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Intent intent = new Intent(Username.this, StartActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
+    }
+    void getusuario() {
+        progreso(true);
+        utilsFirebase.currentUserDetails().get().addOnCompleteListener(task -> {
+            progreso(false);
+            if (task.isSuccessful()) {
+                task.getResult().toObject(userModel.class);
+                if (userModel != null) {
+                    username.setText(userModel.getUsername());
                 }
             }
         });
     }
-
-    void getusuario(){
-        progreso (true);
-        utilsFirebase.currentUserDetails ().get ().addOnCompleteListener (new OnCompleteListener<DocumentSnapshot> () {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                progreso (false);
-                if (task.isSuccessful ()){
-                   task.getResult ().toObject (userModel.class);
-                   if (userModel!=null){
-                       username.setText (userModel.getUsername ());
-                   }
-
-                }else{
-
-                }
-            }
-        });
-    }
-
     void progreso(boolean enproceso) {
         if (enproceso) {
-            userbar.setVisibility (View.VISIBLE);
-            finalizar.setVisibility (View.GONE);
+            userbar.setVisibility(View.VISIBLE);
+            finalizar.setVisibility(View.GONE);
         } else {
-            userbar.setVisibility (View.GONE);
-            finalizar.setVisibility (View.VISIBLE);
+            userbar.setVisibility(View.GONE);
+            finalizar.setVisibility(View.VISIBLE);
         }
     }
 }
