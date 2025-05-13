@@ -44,36 +44,26 @@ public class map extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
-
         createLocationRequest();
         createLocationCallback();
-
-        // Recibir key desde bundle si es necesario
         if (getArguments() != null) {
             key = getArguments().getString("key");
         }
-
         return view;
     }
-
     private void createLocationRequest() {
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(2000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
-
     private void createLocationCallback() {
         locationCallback = new LocationCallback() {
             @Override
@@ -82,18 +72,12 @@ public class map extends Fragment implements OnMapReadyCallback {
                 for (Location location : locationResult.getLocations()) {
                     currentLat = location.getLatitude();
                     currentLng = location.getLongitude();
-
                     uploadLocationToFirebase(currentLat, currentLng);
-
                     LatLng userLocation = new LatLng(currentLat, currentLng);
-                    if (mMap != null) {
-                        // Puedes actualizar posición en el mapa si quieres
-                    }
                 }
             }
         };
     }
-
     private void uploadLocationToFirebase(double lat, double lng) {
         if (key == null) return;
 
@@ -103,10 +87,8 @@ public class map extends Fragment implements OnMapReadyCallback {
         UserLocation location = new UserLocation(lat, lng);
         myRef.child(key).setValue(location);
     }
-
     private void getUserLocationAndAddMarker(String username) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(username);
-
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -120,14 +102,12 @@ public class map extends Fragment implements OnMapReadyCallback {
                     }
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("FirebaseData", "Error al leer datos: " + error.getMessage());
             }
         });
     }
-
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -139,52 +119,38 @@ public class map extends Fragment implements OnMapReadyCallback {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
-
         mMap.setMyLocationEnabled(true);
         startLocationUpdates();
-
-        // Carga usuarios y añade marcadores
         getUserLocationAndAddMarker("brandon");
+        getUserLocationAndAddMarker("charlie");
         getUserLocationAndAddMarker("emilio");
     }
-
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
     }
-
     @Override
     public void onPause() {
         super.onPause();
         fusedLocationClient.removeLocationUpdates(locationCallback);
     }
-
-    // Clase interna para guardar ubicación
     public static class UserLocation {
         private double lat;
         private double lng;
-
-        public UserLocation() {
-        }
-
         public UserLocation(double lat, double lng) {
             this.lat = lat;
             this.lng = lng;
         }
-
         public double getLat() {
             return lat;
         }
-
         public void setLat(double lat) {
             this.lat = lat;
         }
-
         public double getLng() {
             return lng;
         }
-
         public void setLng(double lng) {
             this.lng = lng;
         }

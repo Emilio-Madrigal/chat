@@ -1,6 +1,7 @@
 package com.example.chat;
 
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,8 +22,8 @@ public class chat extends Fragment {
     private ChatRoomAdapterFirestore adapter;
     private FirebaseFirestore db;
 
-    public chat() {}
-
+    public chat() {
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
@@ -33,11 +34,7 @@ public class chat extends Fragment {
         db = FirebaseFirestore.getInstance();
         Query query = db.collection("chatrooms").orderBy("timestamp", Query.Direction.DESCENDING);
 
-        FirestoreRecyclerOptions<ChatRoomModel> options =
-                new FirestoreRecyclerOptions.Builder<ChatRoomModel>()
-                        .setQuery(query, ChatRoomModel.class)
-                        .setLifecycleOwner(this)
-                        .build();
+        FirestoreRecyclerOptions<ChatRoomModel> options = new FirestoreRecyclerOptions.Builder<ChatRoomModel>().setQuery(query, ChatRoomModel.class).setLifecycleOwner(this).build();
 
         adapter = new ChatRoomAdapterFirestore(options, getContext());
         recyclerView.setAdapter(adapter);

@@ -1,32 +1,40 @@
 package com.example.chat.model;
 
-import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.PropertyName;
+
 import java.util.List;
 
 public class ChatRoomModel {
-    private String nombre;
     private String ultimoMensaje;
-    private Timestamp timestamp;
-    private List<String> usuarios;
+    private long timestamp;
+    private List<String> usuarios;  // Este es el nombre que usarás en Java
 
-    public ChatRoomModel() {}
+    public ChatRoomModel() {}  // Constructor vacío requerido por Firestore
 
-    public ChatRoomModel(String nombre, String ultimoMensaje, Timestamp timestamp, List<String> usuarios) {
-        this.nombre = nombre;
-        this.ultimoMensaje = ultimoMensaje;
-        this.timestamp = timestamp;
-        this.usuarios = usuarios;
+    public String getUltimoMensaje() {
+        return ultimoMensaje;
     }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setUltimoMensaje(String ultimoMensaje) {
+        this.ultimoMensaje = ultimoMensaje;
+    }
 
-    public String getUltimoMensaje() { return ultimoMensaje; }
-    public void setUltimoMensaje(String ultimoMensaje) { this.ultimoMensaje = ultimoMensaje; }
+    public long getTimestamp() {
+        return timestamp;
+    }
 
-    public Timestamp getTimestamp() { return timestamp; }
-    public void setTimestamp(Timestamp timestamp) { this.timestamp = timestamp; }
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
 
-    public List<String> getUsuarios() { return usuarios; }
-    public void setUsuarios(List<String> usuarios) { this.usuarios = usuarios; }
+    // Mapear 'users' de Firestore a 'usuarios' en Java
+    @PropertyName("users")
+    public List<String> getUsuarios() {
+        return usuarios;
+    }
+
+    @PropertyName("users")
+    public void setUsuarios(List<String> usuarios) {
+        this.usuarios = usuarios;
+    }
 }

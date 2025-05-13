@@ -12,8 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chat.R;
 import com.example.chat.model.ChatRoomModel;
+import com.example.chat.global;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ChatRoomAdapterFirestore extends FirestoreRecyclerAdapter<ChatRoomModel, ChatRoomAdapterFirestore.ChatRoomViewHolder> {
 
@@ -26,9 +29,39 @@ public class ChatRoomAdapterFirestore extends FirestoreRecyclerAdapter<ChatRoomM
 
     @Override
     protected void onBindViewHolder(@NonNull ChatRoomViewHolder holder, int position, @NonNull ChatRoomModel model) {
-        holder.username.setText(model.getNombre());
-        holder.fecha.setText(model.getUltimoMensaje());  // Muestra el último mensaje como fecha (puedes formatear si es Timestamp)
+        String currentUid = global.getInstance().getUid(); // <- tu UID global
+        String otherUserUid = null;
 
+        // Detectar el UID del otro usuario
+        for (String uid : model.getUsuarios()) {
+            if (!uid.equals(currentUid)) {
+                otherUserUid = uid;
+                break;
+            }
+        }
+
+        if (otherUserUid != null) {
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(otherUserUid)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String nombre = documentSnapshot.getString("username");
+                            holder.username.setText(nombre);
+                        } else {
+                            holder.username.setText("Usuario desconocido");
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        holder.username.setText("Error al cargar");
+                    });
+        } else {
+            holder.username.setText("Sin usuarios");
+        }
+
+        // Mostrar el último mensaje
+        holder.fecha.setText(model.getUltimoMensaje());
     }
 
     @NonNull
