@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import com.example.chat.apatador.ChatRoomAdapterFirestore;
 import com.example.chat.model.ChatRoomModel;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -19,30 +17,16 @@ public class chat extends Fragment {
     private ChatRoomAdapterFirestore adapter;
     private FirebaseFirestore db;
     public chat() {}
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
         recyclerView = view.findViewById(R.id.recyclerChatRooms);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         db = FirebaseFirestore.getInstance();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String uidActual = global.getInstance().getUid();
-
-Query query = db.collection("chatrooms")
-        .whereArrayContains("users", uidActual)
-        .orderBy("timestamp", Query.Direction.DESCENDING);
-
-        FirestoreRecyclerOptions<ChatRoomModel> options = new FirestoreRecyclerOptions.Builder<ChatRoomModel>()
-                .setQuery(query, ChatRoomModel.class)
-                .setLifecycleOwner(this)
-                .build();
-
+        Query query = db.collection("chatrooms").orderBy("timestamp", Query.Direction.DESCENDING);
+        FirestoreRecyclerOptions<ChatRoomModel> options = new FirestoreRecyclerOptions.Builder<ChatRoomModel>().setQuery(query, ChatRoomModel.class).setLifecycleOwner(this).build();
         adapter = new ChatRoomAdapterFirestore(options, getContext());
         recyclerView.setAdapter(adapter);
         return view;
     }
-
-
 }

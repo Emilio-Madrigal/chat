@@ -25,18 +25,14 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate (savedInstanceState);
         EdgeToEdge.enable (this);
         setContentView (R.layout.start_activity);
-
         chat = new chat ();
         map = new map ();
-
         FirebaseFirestore db = FirebaseFirestore.getInstance ();
         FirebaseAuth mAuth = FirebaseAuth.getInstance ();
-        FirebaseUser currentUser = mAuth.getCurrentUser (); // <-- corregido "getCurrentUsaer" a "getCurrentUser"
-
+        FirebaseUser currentUser = mAuth.getCurrentUser ();
         if (currentUser != null) {
             String uid = currentUser.getUid ();
             global.getInstance ().setUid (uid);
-
             db.collection ("users")
                     .document (uid)
                     .get ()
@@ -58,7 +54,6 @@ public class StartActivity extends AppCompatActivity {
                         Toast.makeText (StartActivity.this, "Error al obtener datos", Toast.LENGTH_LONG).show ();
                     });
         }
-
         bottomNavigationView = findViewById (R.id.nav_menu);
 
         if (savedInstanceState == null) {
@@ -81,7 +76,6 @@ public class StartActivity extends AppCompatActivity {
                             .replace (R.id.mainFrame, map)
                             .commit ();
                 }
-
                 if (item.getItemId () == R.id.chat) {
                     getSupportFragmentManager ()
                             .beginTransaction ()
