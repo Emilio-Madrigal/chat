@@ -4,6 +4,8 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center"
+    android:id="@+id/holaskriller"
+    android:clickable="true"
  >
 <ImageView
     android:layout_margin="5dp"
@@ -24,6 +26,16 @@
         android:orientation="vertical">
         <TextView
             android:id="@+id/USERname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:text="username">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/idChat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"

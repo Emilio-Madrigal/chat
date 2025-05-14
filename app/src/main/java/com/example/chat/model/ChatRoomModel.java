@@ -1,42 +1,36 @@
 package com.example.chat.model;
 
-import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.PropertyName;
+import java.util.Date;
 import java.util.List;
 
 public class ChatRoomModel {
-
     private String ultimoMensaje;
-    private Timestamp timestamp;
-    private List<String> usuarios;
+    private List<String> users;
+    private Date timestamp;
 
-    // 🔧 Constructor vacío requerido por Firestore
-    public ChatRoomModel() {
-    }
-
-    public ChatRoomModel(List<String> usuarios) {
-        this.usuarios = usuarios;
-    }
+    public ChatRoomModel() {} // Constructor vacío requerido por Firestore
 
     public String getUltimoMensaje() {
         return ultimoMensaje;
     }
 
-    public Timestamp getTimestamp() {
+    public void setUltimoMensaje(String ultimoMensaje) {
+        this.ultimoMensaje = ultimoMensaje;
+    }
+
+    public List<String> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<String> users) {
+        this.users = users;
+    }
+
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
-    }
-
-    @PropertyName("users")
-    public List<String> getUsuarios() {
-        return usuarios;
-    }
-
-    @PropertyName("users")
-    public void setUsuarios(List<String> usuarios) {
-        this.usuarios = usuarios;
     }
 }

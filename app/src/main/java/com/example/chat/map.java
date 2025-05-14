@@ -1,5 +1,7 @@
 package com.example.chat;
+
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -11,21 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.android.gms.location.*;
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.model.*;
+import com.google.firebase.database.*;
+
+import java.util.HashMap;
 
 public class map extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
@@ -34,30 +27,37 @@ public class map extends Fragment implements OnMapReadyCallback {
     private LocationCallback locationCallback;
     private double currentLat = 0.0;
     private double currentLng = 0.0;
-    private String key;
+    private String key; // Usuario actual
+
     public map() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
         createLocationRequest();
         createLocationCallback();
+
         if (getArguments() != null) {
             key = getArguments().getString("key");
         }
+
         return view;
     }
+
     private void createLocationRequest() {
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(2000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
+
     private void createLocationCallback() {
         locationCallback = new LocationCallback() {
             @Override
@@ -67,86 +67,109 @@ public class map extends Fragment implements OnMapReadyCallback {
                     currentLat = location.getLatitude();
                     currentLng = location.getLongitude();
                     uploadLocationToFirebase(currentLat, currentLng);
-                    LatLng userLocation = new LatLng(currentLat, currentLng);
                 }
             }
         };
     }
+
     private void uploadLocationToFirebase(double lat, double lng) {
         if (key == null) return;
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("users");
-
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("users");
         UserLocation location = new UserLocation(lat, lng);
         myRef.child(key).setValue(location);
     }
-    private void getUserLocationAndAddMarker(String username) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(username);
-        ref.addValueEventListener(new ValueEventListener() {
+
+    private void loadOtherUsersLocations() {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    Double lat = snapshot.child("lat").getValue(Double.class);
-                    Double lng = snapshot.child("lng").getValue(Double.class);
+                if (mMap == null) return;
 
-                    if (lat != null && lng != null && mMap != null) {
+                mMap.clear(); // Limpiar marcadores antiguos
+
+                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                    String username = userSnapshot.getKey();
+
+                    if (username == null || username.equals(key)) continue; // No mostrar marcador del usuario actual
+
+                    Double lat = userSnapshot.child("lat").getValue(Double.class);
+                    Double lng = userSnapshot.child("lng").getValue(Double.class);
+
+                    if (lat != null && lng != null) {
                         LatLng userLatLng = new LatLng(lat, lng);
-                        mMap.addMarker(new MarkerOptions().position(userLatLng).title(username));
+                        Marker marker = mMap.addMarker(new MarkerOptions()
+                                .position(userLatLng)
+                                .title(username));
+                        if (marker != null) {
+                            marker.setTag(username); // Guardamos el username como tag
+                        }
                     }
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("FirebaseData", "Error al leer datos: " + error.getMessage());
             }
         });
     }
+
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
+
         mMap.setMyLocationEnabled(true);
         startLocationUpdates();
-        getUserLocationAndAddMarker("brandon");
-        getUserLocationAndAddMarker("charlie");
-        getUserLocationAndAddMarker("emilio");
+        loadOtherUsersLocations();
+
+        // Escucha clics en los marcadores
+        mMap.setOnMarkerClickListener(marker -> {
+            String clickedUsername = (String) marker.getTag();
+            if (clickedUsername != null) {
+                // Abrir nueva Activity
+                Intent intent = new Intent(requireContext(), ChatRoomActivity.class);
+                intent.putExtra("username", clickedUsername);
+                startActivity(intent);
+            }
+            return false;
+        });
     }
+
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
     }
+
     @Override
     public void onPause() {
         super.onPause();
         fusedLocationClient.removeLocationUpdates(locationCallback);
     }
+
     public static class UserLocation {
         private double lat;
         private double lng;
+
+        public UserLocation() {} // Requerido por Firebase
+
         public UserLocation(double lat, double lng) {
             this.lat = lat;
             this.lng = lng;
         }
-        public double getLat() {
-            return lat;
-        }
-        public void setLat(double lat) {
-            this.lat = lat;
-        }
-        public double getLng() {
-            return lng;
-        }
-        public void setLng(double lng) {
-            this.lng = lng;
-        }
+
+        public double getLat() { return lat; }
+        public void setLat(double lat) { this.lat = lat; }
+
+        public double getLng() { return lng; }
+        public void setLng(double lng) { this.lng = lng; }
     }
 }

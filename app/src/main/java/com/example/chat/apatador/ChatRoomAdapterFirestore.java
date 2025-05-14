@@ -1,4 +1,5 @@
 package com.example.chat.apatador;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,8 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.chat.R;
-import com.example.chat.model.ChatRoomModel;
 import com.example.chat.global;
+import com.example.chat.model.ChatRoomModel;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -23,9 +24,9 @@ public class ChatRoomAdapterFirestore extends FirestoreRecyclerAdapter<ChatRoomM
     @SuppressLint("SetTextI18n")
     @Override
     protected void onBindViewHolder(@NonNull ChatRoomViewHolder holder, int position, @NonNull ChatRoomModel model) {
-        String currentUid = global.getInstance().getUid();
+        String currentUid = global.getInstance().getUid ();
         String otherUserUid = null;
-        for (String uid : model.getUsuarios()) {
+        for (String uid : model.getUsers ()) {
             if (!uid.equals(currentUid)) {
                 otherUserUid = uid;
                 break;
