@@ -4,8 +4,7 @@ public class userModel {
     private  String telefono;
     private  String username;
     private Timestamp timestamp;
-    public userModel() {
-    }
+    public userModel() {}
     public userModel(String telefono, Timestamp timestamp, String username) {
         this.telefono = telefono;
         this.timestamp = timestamp;

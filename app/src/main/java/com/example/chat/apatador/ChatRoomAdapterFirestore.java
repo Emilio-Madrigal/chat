@@ -1,5 +1,4 @@
 package com.example.chat.apatador;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -8,28 +7,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.chat.ChatRoomActivity;
-import com.example.chat.One_Time_Password;
 import com.example.chat.R;
 import com.example.chat.model.ChatRoomModel;
 import com.example.chat.global;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 public class ChatRoomAdapterFirestore extends FirestoreRecyclerAdapter<ChatRoomModel, ChatRoomAdapterFirestore.ChatRoomViewHolder> {
     Context context;
-
+    String nombre;
     public ChatRoomAdapterFirestore(@NonNull FirestoreRecyclerOptions<ChatRoomModel> options, Context context) {
         super (options);
         this.context = context;
     }
-
     @SuppressLint("SetTextI18n")
     @Override
     protected void onBindViewHolder(@NonNull ChatRoomViewHolder holder, int position, @NonNull ChatRoomModel model) {
@@ -50,7 +43,7 @@ public class ChatRoomAdapterFirestore extends FirestoreRecyclerAdapter<ChatRoomM
                     .get ()
                     .addOnSuccessListener (documentSnapshot -> {
                         if (documentSnapshot.exists ()) {
-                            String nombre = documentSnapshot.getString ("username");
+                            nombre = documentSnapshot.getString ("username");
                             holder.username.setText (nombre);
                         } else {
                             holder.username.setText ("Usuario desconocido");
@@ -61,32 +54,27 @@ public class ChatRoomAdapterFirestore extends FirestoreRecyclerAdapter<ChatRoomM
             holder.username.setText ("Sin usuarios");
         }
         holder.fecha.setText (model.getUltimoMensaje ());
-
-
         holder.itemView.setOnClickListener (new View.OnClickListener () {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ChatRoomActivity.class);
                 intent.putExtra("documentId", documentId);
+                intent.putExtra("nombre", nombre);
                 context.startActivity(intent);
             }
         });
-
     }
-
     @NonNull
     @Override
     public ChatRoomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from (context).inflate (R.layout.item_chat_room, parent, false);
         return new ChatRoomViewHolder (view);
     }
-
     static class ChatRoomViewHolder extends RecyclerView.ViewHolder {
         TextView username;
         TextView fecha;
         ImageView foto;
         TextView id;
-
         public ChatRoomViewHolder(@NonNull View itemView) {
             super (itemView);
             username = itemView.findViewById (R.id.USERname);

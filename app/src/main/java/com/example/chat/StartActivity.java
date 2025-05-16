@@ -1,5 +1,4 @@
 package com.example.chat;
-
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -63,7 +62,6 @@ public class StartActivity extends AppCompatActivity {
                     .commit ();
             bottomNavigationView.setSelectedItemId (R.id.chat);
         }
-
         bottomNavigationView.setOnItemSelectedListener (new NavigationBarView.OnItemSelectedListener () {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

@@ -1,5 +1,4 @@
 package com.example.chat;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,13 +11,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-
 import com.google.android.gms.location.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import com.google.firebase.database.*;
-
-import java.util.HashMap;
 
 public class map extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
@@ -27,7 +23,8 @@ public class map extends Fragment implements OnMapReadyCallback {
     private LocationCallback locationCallback;
     private double currentLat = 0.0;
     private double currentLng = 0.0;
-    private String key; // Usuario actual
+    private String key;
+    private boolean firstLocationUpdate = true;
 
     public map() {}
 
@@ -35,12 +32,10 @@ public class map extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
-
         createLocationRequest();
         createLocationCallback();
 
@@ -50,14 +45,12 @@ public class map extends Fragment implements OnMapReadyCallback {
 
         return view;
     }
-
     private void createLocationRequest() {
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(2000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
-
     private void createLocationCallback() {
         locationCallback = new LocationCallback() {
             @Override
@@ -67,21 +60,24 @@ public class map extends Fragment implements OnMapReadyCallback {
                     currentLat = location.getLatitude();
                     currentLng = location.getLongitude();
                     uploadLocationToFirebase(currentLat, currentLng);
+
+                    if (mMap != null && firstLocationUpdate) {
+                        LatLng currentLatLng = new LatLng(currentLat, currentLng);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15)); // Centrar con zoom
+                        firstLocationUpdate = false;
+                    }
                 }
             }
         };
     }
-
     private void uploadLocationToFirebase(double lat, double lng) {
         if (key == null) return;
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("users");
         UserLocation location = new UserLocation(lat, lng);
         myRef.child(key).setValue(location);
     }
-
     private void loadOtherUsersLocations() {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -108,33 +104,26 @@ public class map extends Fragment implements OnMapReadyCallback {
                     }
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("FirebaseData", "Error al leer datos: " + error.getMessage());
             }
         });
     }
-
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
-
         mMap.setMyLocationEnabled(true);
         startLocationUpdates();
         loadOtherUsersLocations();
-
-        // Escucha clics en los marcadores
         mMap.setOnMarkerClickListener(marker -> {
             String clickedUsername = (String) marker.getTag();
             if (clickedUsername != null) {
-                // Abrir nueva Activity
                 Intent intent = new Intent(requireContext(), ChatRoomActivity.class);
                 intent.putExtra("username", clickedUsername);
                 startActivity(intent);
@@ -142,33 +131,26 @@ public class map extends Fragment implements OnMapReadyCallback {
             return false;
         });
     }
-
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
     }
-
     @Override
     public void onPause() {
         super.onPause();
         fusedLocationClient.removeLocationUpdates(locationCallback);
     }
-
     public static class UserLocation {
         private double lat;
         private double lng;
-
         public UserLocation() {} // Requerido por Firebase
-
         public UserLocation(double lat, double lng) {
             this.lat = lat;
             this.lng = lng;
         }
-
         public double getLat() { return lat; }
         public void setLat(double lat) { this.lat = lat; }
-
         public double getLng() { return lng; }
         public void setLng(double lng) { this.lng = lng; }
     }

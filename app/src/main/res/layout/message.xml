@@ -29,32 +29,11 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/USERname"
+            android:id="@+id/message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="username"
             android:textSize="18sp"
-            android:textStyle="bold">
-
-        </TextView>
-
-        <TextView
-            android:id="@+id/idChat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="username"
-            android:textSize="18sp"
-            android:textStyle="bold">
-
-        </TextView>
-
-        <TextView
-            android:id="@+id/lastmessage"
-            android:layout_width="match_parent"
-            android:layout_gravity="center"
-            android:layout_height="wrap_content"
-
-            android:text="mensaje"
             android:textStyle="bold">
 
         </TextView>
