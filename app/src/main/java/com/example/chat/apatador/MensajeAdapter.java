@@ -42,7 +42,6 @@ public class MensajeAdapter extends RecyclerView.Adapter<MensajeAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         com.example.chat.model.Mensaje m = listaMensajes.get(position);
         holder.texto.setText(m.getMessage());
-//        holder.nombre.setText(m.getUid());
     }
 
     @Override
@@ -57,9 +56,7 @@ public class MensajeAdapter extends RecyclerView.Adapter<MensajeAdapter.ViewHold
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            //nombre = itemView.findViewById(R.id.name);
             texto = itemView.findViewById(R.id.message);
-            //picture = itemView.findViewById(R.id.picture);
             container = itemView.findViewById(R.id.message_container);
         }
     }

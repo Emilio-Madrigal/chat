@@ -56,7 +56,6 @@ public class map extends Fragment implements OnMapReadyCallback {
 
         if (getArguments() != null) {
             key = getArguments().getString("key");
-            Toast.makeText(requireContext(), "kety" + key, LENGTH_LONG).show();
             Log.d("MapFragment", "Key recibida: " + key);
         } else {
             Log.e("MapFragment", "No se recibió argumento 'key'");
@@ -111,7 +110,6 @@ public class map extends Fragment implements OnMapReadyCallback {
                 .addOnSuccessListener(aVoid -> Log.d("RealtimeDB", "Ubicación subida correctamente"))
                 .addOnFailureListener(e -> Log.e("RealtimeDB", "Error al subir ubicación", e));
     }
-
     private void loadOtherUsersLocations() {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
@@ -148,7 +146,6 @@ public class map extends Fragment implements OnMapReadyCallback {
             }
         });
     }
-
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -158,11 +155,9 @@ public class map extends Fragment implements OnMapReadyCallback {
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
-
         mMap.setMyLocationEnabled(true);
         startLocationUpdates();
         loadOtherUsersLocations();
-
         mMap.setOnMarkerClickListener(marker -> {
             String clickedUsername = (String) marker.getTag();
             if (clickedUsername != null) {
@@ -171,7 +166,6 @@ public class map extends Fragment implements OnMapReadyCallback {
             return false;
         });
     }
-
     private void buscarOCrearChat(String clickedUsername) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -183,7 +177,6 @@ public class map extends Fragment implements OnMapReadyCallback {
                         DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
                         String uidOtro = document.getId();
                         String miUid = global.getInstance().getUid();
-
                         db.collection("chatrooms")
                                 .whereArrayContains("users", miUid)
                                 .get()
@@ -195,12 +188,9 @@ public class map extends Fragment implements OnMapReadyCallback {
                                             return;
                                         }
                                     }
-
                                     HashMap<String, Object> nuevoChatroom = new HashMap<>();
                                     nuevoChatroom.put("users", java.util.Arrays.asList(miUid, uidOtro));
-                                    nuevoChatroom.put("ultimoMensaje", "");
                                     nuevoChatroom.put("timestamp", com.google.firebase.Timestamp.now());
-
                                     db.collection("chatrooms")
                                             .add(nuevoChatroom)
                                             .addOnSuccessListener(newChatroomRef -> {
@@ -217,20 +207,17 @@ public class map extends Fragment implements OnMapReadyCallback {
                 })
                 .addOnFailureListener(e -> Log.e("Firestore", "Error consultando Firestore", e));
     }
-
     private void abrirChat(String chatroomId, String nombreUsuario) {
         Intent intent = new Intent(requireContext(), ChatRoomActivity.class);
         intent.putExtra("documentId", chatroomId);
         intent.putExtra("nombre", nombreUsuario);
         startActivity(intent);
     }
-
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
     }
-
     @Override
     public void onPause() {
         super.onPause();

@@ -56,7 +56,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             finish();
             return;
         }
-        nombreuser.setText(nombre != null ? nombre : "Usuario");
+        nombreuser.setText(nombre);
         salir.setOnClickListener(v -> {
             Intent intent = new Intent(ChatRoomActivity.this, StartActivity.class);
             intent.putExtra("estado", true);
