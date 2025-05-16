@@ -1,42 +1,66 @@
 package com.example.chat.apatador;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.chat.R;
+import com.example.chat.global;
 import java.util.List;
+
 public class MensajeAdapter extends RecyclerView.Adapter<MensajeAdapter.ViewHolder> {
     private List<com.example.chat.model.Mensaje> listaMensajes;
+
     public MensajeAdapter(List<com.example.chat.model.Mensaje> listaMensajes) {
         this.listaMensajes = listaMensajes;
     }
+
     public void actualizarMensajes(List<com.example.chat.model.Mensaje> nuevos) {
         this.listaMensajes = nuevos;
         notifyDataSetChanged();
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        String uidActual = global.getInstance().getUid();
+        return listaMensajes.get(position).getUid().equals(uidActual) ? 1 : 0;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View vista = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.message, parent, false);
+        int layout = (viewType == 1) ? R.layout.message_right : R.layout.message_left;
+        View vista = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
         return new ViewHolder(vista);
     }
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         com.example.chat.model.Mensaje m = listaMensajes.get(position);
         holder.texto.setText(m.getMessage());
+//        holder.nombre.setText(m.getUid());
     }
+
     @Override
     public int getItemCount() {
         return listaMensajes.size();
     }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView texto;
+        TextView texto, nombre;
+        ImageView picture;
+        LinearLayout container;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            //nombre = itemView.findViewById(R.id.name);
             texto = itemView.findViewById(R.id.message);
+            //picture = itemView.findViewById(R.id.picture);
+            container = itemView.findViewById(R.id.message_container);
         }
     }
 }

@@ -4,11 +4,13 @@ public class Mensaje {
     private String message;
     private String uid;
     private Timestamp timestamp;
+    private String picture;
     public Mensaje() {}
     public Mensaje(String message, String uid, Timestamp timestamp) {
         this.message = message;
         this.uid = uid;
         this.timestamp = timestamp;
+        this.picture = picture;
     }
     public String getMessage() {
         return message;
@@ -27,5 +29,11 @@ public class Mensaje {
     }
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+    public String getPicture() {
+        return picture;
     }
 }
